@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, TextInput, StyleSheet, Switch } from 'react-native';
 
+import {NativeModules} from 'react-native';
+
 import EscritaNFC from './src/EscritaNFC';
 import LeituraNFC from './src/LeituraNFC';
+
+var NFC_Manager = NativeModules.ToastExample;
 
 const App = () => {
     const [ textInput, setTextInput] = useState('');
@@ -11,8 +15,8 @@ const App = () => {
     const buttons = [
         {id: 1, text: 'GRAVAR NO CARTÃO', onPress: () => setFunctionType('Gravar')},
         {id: 2, text: 'LER CARTÃO', onPress: () => setFunctionType('Ler')},
-        {id: 3, text: 'FORMATAR CARTÃO'},
-        {id: 4, text: 'TESTE LEITURA/GRAVAÇÃO'},
+        {id: 3, text: 'FORMATAR CARTÃO', onPress: () => NFC_Manager.AtivarKioskMode('ativado')},
+        {id: 4, text: 'TESTE LEITURA/GRAVAÇÃO', onPress: () => NFC_Manager.AtivarKioskMode('desativado')},
     ];
 
     function type(){
