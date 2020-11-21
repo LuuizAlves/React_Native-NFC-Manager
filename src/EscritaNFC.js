@@ -4,18 +4,18 @@ import NfcManager, { Ndef, NfcTech } from 'react-native-nfc-manager';
 
 import NFC from './images/ic_nfc.png';
 
-const EscritaNFC = ({text}) => {
-    const [ valueRecord, SetValueRecord ] = useState('SHOW!');
+const EscritaNFC = ({text, restartWrite}) => {
     const [ sucessfully, setSucessufully ] = useState('');
 
     useEffect(() => {
-        NfcManager.start();
+        setSucessufully('');
+
         _testNdef();
 
         return () => {
             _cleanUp();
         };
-    },[]);
+    },[restartWrite]);
 
     const _cleanUp = () => {
         NfcManager.cancelTechnologyRequest().catch(() => 0);
@@ -23,6 +23,7 @@ const EscritaNFC = ({text}) => {
     
     const _testNdef = async () => {
         console.log(text);
+        console.log(restartWrite);
         try {
             let resp = await NfcManager.requestTechnology(NfcTech.Ndef, {
                 alertMessage: 'Ready to write some NFC tags!'
@@ -42,7 +43,7 @@ const EscritaNFC = ({text}) => {
 
             _cleanUp();
         } catch (ex) {
-          console.warn('ex', ex);
+        //   console.warn('ex', ex);
           _cleanUp();
         }
     };

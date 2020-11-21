@@ -12,7 +12,8 @@
   "dependencies": {
     "react": "16.13.1",
     "react-native": "0.63.3",
-    "react-native-nfc-manager": "^2.2.0"
+    "react-native-nfc-manager": "^2.2.0",
+    "react-native-restart": "0.0.17"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",

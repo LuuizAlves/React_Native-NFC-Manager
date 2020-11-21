@@ -1,28 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import NfcManager, { NfcEvents } from 'react-native-nfc-manager';
 
 import NFC from './images/ic_nfc.png';
 
-const LeituraNFC = () => {
+const LeituraNFC = ({restartWrite}) => {
     const [ value, SetValue ] = useState('');
+    const [ sucessfully, setSucessufully ] = useState('');
+    const [ restart, setRestart ] = useState(false);
+
     useEffect(() => {
         NfcManager.start();
-        _test();
         NfcManager.setEventListener(NfcEvents.DiscoverTag, tag => {
-            bin2String(tag);
-            
-            // console.warn('tag', tag);
-            // console.warn('value', );
-            // SetValue(bin2String(tag));
-            // NfcManager.setAlertMessageIOS('I got your tag!');
-            //NfcManager.unregisterTagEvent().catch(() => 0);
+
+            const x = Object.values(tag);
+
+            var message = '';
+            var message = x[0][0]['payload'];
+
+            convert(message);
         });
 
-        return () => {
-            NfcManager.setEventListener(NfcEvents.DiscoverTag, null);
-            NfcManager.unregisterTagEvent().catch(() => 0);
-        }
+        _test();        
+
+        // return () => {
+        //     // NfcManager.setEventListener(NfcEvents.DiscoverTag, null);
+        //     NfcManager.unregisterTagEvent().catch(() => 0);
+        // }
     });
 
     const _cancel = () => {
@@ -32,25 +36,27 @@ const LeituraNFC = () => {
     const _test = async () => {
         try {
             await NfcManager.registerTagEvent();
+            
         } catch (ex) {
             // console.warn('ex', ex);
             NfcManager.unregisterTagEvent().catch(() => 0);
         }
     };
 
-    const bin2String = async (tag) => {
-        const x = Object.values(tag);
-        const message = x[0][0]['payload'];
+    function convert(x){
+        console.log('X: ', x);
 
         let result = "";
 
-        for (var i = 0; i < message.length; i++) {
-            result = result + String.fromCharCode(message[i]);            
+        if( x != ''){
+            for (var i = 0; i < x.length; i++) {
+                if(x[i] != 0) result = result + String.fromCharCode(x[i]);            
+            }
         }
 
-        SetValue(result);
-        console.log('XXXXXXXXXXXX: ', value);
-      }
+        setSucessufully(result);
+        return result;
+    }
 
     return (
         <View style={styles.container}>
@@ -62,7 +68,14 @@ const LeituraNFC = () => {
             />
 
             <View style={styles.containerMessageWrite}>
-                <Text style={styles.textWrite}>{value}</Text>
+                {sucessfully == '' ? (
+                    <Text style={styles.textWrite}>Aproxime o Cartão</Text>
+                ):(
+                    <>
+                        <Text style={styles.textWrite}>Leitura com sucesso: </Text>
+                        <Text style={styles.textWrite}>{sucessfully}</Text>
+                    </>
+                )}  
             </View>            
         </View>
     );
@@ -73,7 +86,6 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     containerMessageWrite:{
-        width: 130,
         alignItems: 'flex-start',
     },
 
@@ -86,7 +98,7 @@ const styles = StyleSheet.create({
         fontSize: 22,
     },
     textWrite:{
-        fontSize: 18,
+        fontSize: 14,
         color: 'gray'
     }
 })
