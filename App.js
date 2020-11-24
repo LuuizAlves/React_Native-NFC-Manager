@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-nativ
 
 import EscritaNFC from './src/EscritaNFC';
 import LeituraNFC from './src/LeituraNFC';
+import GetId from './src/GetId';
 
 const App = () => {
     const [ textInput, setTextInput] = useState('');
@@ -12,7 +13,7 @@ const App = () => {
     const buttons = [
         {id: 1, text: 'GRAVAR NO CARTÃO', onPress: () => {setFunctionType('Gravar'), setX(!x)}},
         {id: 2, text: 'LER CARTÃO', onPress: () => {setFunctionType('Ler'), setX(!x)}},
-        {id: 3, text: 'FORMATAR CARTÃO'},
+        {id: 3, text: 'ID CARTÃO', onPress: () => {setFunctionType('ID'), setX(!x)}},
         {id: 4, text: 'TESTE LEITURA/GRAVAÇÃO'},
     ];
 
@@ -26,6 +27,10 @@ const App = () => {
                 return(
                     <LeituraNFC  restartWrite={x} />
                 );
+            case 'ID':
+                return(
+                    <GetId />
+                )
             default:
                 return(
                     <>
