@@ -1,21 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import NfcManager, { Ndef, NfcTech } from 'react-native-nfc-manager';
+import NfcManager, { Ndef, NfcTech, NfcEvents } from 'react-native-nfc-manager';
 
 import NFC from './images/ic_nfc.png';
 
-const EscritaNFC = ({text, restartWrite, WriteDone}) => {
+const TesteLeituraEscrita = ({text, restartWrite, WriteDone}) => {
     const [ sucessfully, setSucessufully ] = useState('');
 
     useEffect(() => {
+        let mounted = true;
+
         NfcManager.start();
+
         setSucessufully('');
 
         _testNdef();
 
-        return () => {
-            _cleanUp();
-        };
+        _test();    
+
+        NfcManager.setEventListener(NfcEvents.DiscoverTag, tag => {
+
+            const x = Object.values(tag);
+
+            var message = '';
+            var message = x[0][0]['payload'];
+            console.log('FFFFFFFFFFFFFF');
+
+            convert(message);
+        });
+
+        // return () => {
+        //     _cleanUp();
+        // };
+        return () => mounted = false;
     },[restartWrite]);
 
     const _cleanUp = () => {
@@ -43,14 +60,40 @@ const EscritaNFC = ({text, restartWrite, WriteDone}) => {
             setSucessufully('Sucesso ao gravar informação!');
             WriteDone(sucessfully);
 
-            _cleanUp();
+            
         } catch (ex) {
         //   console.warn('ex', ex);
           _cleanUp();
         }
     };
 
+    const _test = async () => {
+        try {
+            await NfcManager.registerTagEvent();
+
+            _cleanUp();
+        } catch (ex) {
+            // console.warn('ex', ex);
+            NfcManager.unregisterTagEvent().catch(() => 0);
+        }
+    };
+
     function WriteDone(result){
+        return result;
+    }
+
+    function convert(x){
+        console.log('X: ', x);
+
+        let result = "";
+
+        if( x != ''){
+            for (var i = 0; i < x.length; i++) {
+                if(x[i] != 0) result = result + String.fromCharCode(x[i]);            
+            }
+        }
+
+        setSucessufully(result);
         return result;
     }
 
@@ -102,4 +145,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default EscritaNFC;
+export default TesteLeituraEscrita;

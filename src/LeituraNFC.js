@@ -11,6 +11,8 @@ const LeituraNFC = ({restartWrite}) => {
 
     useEffect(() => {
         NfcManager.start();
+        _test();   
+        
         NfcManager.setEventListener(NfcEvents.DiscoverTag, tag => {
 
             const x = Object.values(tag);
@@ -21,7 +23,7 @@ const LeituraNFC = ({restartWrite}) => {
             convert(message);
         });
 
-        _test();        
+             
 
         // return () => {
         //     // NfcManager.setEventListener(NfcEvents.DiscoverTag, null);

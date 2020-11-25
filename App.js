@@ -4,32 +4,41 @@ import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-nativ
 import EscritaNFC from './src/EscritaNFC';
 import LeituraNFC from './src/LeituraNFC';
 import GetId from './src/GetId';
+import EscritaLeitura from './src/TesteEscritaLeitura';
 
 const App = () => {
     const [ textInput, setTextInput] = useState('');
     const [ functionType, setFunctionType ] = useState('');
-    const [ x, setX ] = useState(false);
+    const [ restartComponent, setRestartComponent ] = useState(false);
+
+    const [ writeDone, setWriteDone ] = useState('Wait!');
 
     const buttons = [
-        {id: 1, text: 'GRAVAR NO CARTÃO', onPress: () => {setFunctionType('Gravar'), setX(!x)}},
-        {id: 2, text: 'LER CARTÃO', onPress: () => {setFunctionType('Ler'), setX(!x)}},
-        {id: 3, text: 'ID CARTÃO', onPress: () => {setFunctionType('ID'), setX(!x)}},
-        {id: 4, text: 'TESTE LEITURA/GRAVAÇÃO'},
+        {id: 1, text: 'GRAVAR NO CARTÃO', onPress: () => {setFunctionType('Gravar'), setRestartComponent(!restartComponent)}},
+        {id: 2, text: 'LER CARTÃO', onPress: () => {setFunctionType('Ler'), setRestartComponent(!restartComponent)}},
+        {id: 3, text: 'ID CARTÃO', onPress: () => {setFunctionType('ID'), setRestartComponent(!restartComponent)}},
+        {id: 4, text: 'TESTE LEITURA/GRAVAÇÃO', onPress: () => {setFunctionType('Teste'), setRestartComponent(!restartComponent)}},
     ];
 
     function type(){
         switch (functionType) {
             case 'Gravar':
                 return(
-                    <EscritaNFC text={textInput} restartWrite={x}/>
+                    <EscritaNFC text={textInput} restartWrite={restartComponent}/>
                 );
             case 'Ler':
                 return(
-                    <LeituraNFC  restartWrite={x} />
+                    <LeituraNFC  restartWrite={restartComponent} />
                 );
             case 'ID':
                 return(
                     <GetId />
+                )
+            case 'Teste':
+                return(
+                    <>
+                        <EscritaLeitura text="LUIZ" restartWrite={restartComponent}/>
+                    </>
                 )
             default:
                 return(
