@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, Alert } from 'react-native';
 import NfcManager, { NfcEvents } from 'react-native-nfc-manager';
 
 import NFC from './images/ic_nfc.png';
 
 const LeituraNFC = ({restartWrite}) => {
-    const [ value, SetValue ] = useState('');
+    const [ id, setID ] = useState('');
     const [ sucessfully, setSucessufully ] = useState('');
-    const [ restart, setRestart ] = useState(false);
 
     useEffect(() => {
         NfcManager.start();
@@ -19,8 +18,11 @@ const LeituraNFC = ({restartWrite}) => {
 
             var message = '';
             var message = x[0][0]['payload'];
+            var id = tag.id;
 
-            convert(message);
+            console.log(tag);
+
+            convertMessage(message, id);
         });
 
              
@@ -40,24 +42,57 @@ const LeituraNFC = ({restartWrite}) => {
             await NfcManager.registerTagEvent();
             
         } catch (ex) {
-            // console.warn('ex', ex);
+            console.warn('ex', ex);
             NfcManager.unregisterTagEvent().catch(() => 0);
         }
     };
 
-    function convert(x){
-        console.log('X: ', x);
-
+    function convertMessage(x, id){
         let result = "";
 
-        if( x != ''){
-            for (var i = 0; i < x.length; i++) {
-                if(x[i] != 0) result = result + String.fromCharCode(x[i]);            
+        console.log(x);
+        if(x != undefined){
+            if( x != ''){
+                for (var i = 0; i < x.length; i++) {
+                    if(x[i] != 0) result = result + String.fromCharCode(x[i]);            
+                }
             }
+            converteId(id);
+            setSucessufully(result);
+            return result;
+        }else{
+            Alert.alert("","Tipo de cartão não suportado!");
+        }
+    }
+
+    function converteId(id) {
+        // List<String> values = new List<String>();
+
+        var values = [];
+
+        var msg = "";
+        var cont = 0;
+
+        for (var i = 0; i < id.length; i++) {
+          cont++;
+          msg += id[i];
+
+          if (cont == 2) {
+            values.push(msg);
+            msg = "";
+            cont = 0;
+          }
+        }
+        var idInvertido = "";
+
+        values = values.reverse();
+
+        for (var i=0; i < values.length; i++) {
+          idInvertido += values[i];
         }
 
-        setSucessufully(result);
-        return result;
+        var resultado = parseInt(idInvertido, 16);
+        setID(resultado);
     }
 
     return (
@@ -75,6 +110,7 @@ const LeituraNFC = ({restartWrite}) => {
                 ):(
                     <>
                         <Text style={styles.textWrite}>Leitura com sucesso: </Text>
+                        <Text style={styles.textWrite}>ID Cartão: {id}</Text>
                         <Text style={styles.textWrite}>{sucessfully}</Text>
                     </>
                 )}  

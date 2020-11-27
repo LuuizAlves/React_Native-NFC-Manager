@@ -36,7 +36,7 @@ const GetId = () => {
             let tag = await NfcManager.getTag();
             let x = tag.id;
 
-            console.warn();
+            console.warn(x);
 
             
         
